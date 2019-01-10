@@ -4,5 +4,5 @@ module.exports = {
     'POST /project/update':                           { action: 'Project/updateProdById' },
     "GET /project/getProdById/:id" :                  { action: 'Project/getProdById'},
     "GET /project/getProdByPersonId/:dutyId" :        { action: 'Project/getProdByPersonId'},
-    "GET /project/getProdByAreaId/:areaId" :          { action: 'Project/getProdByAreaId'}
+    "GET /project/search" :                           { action: 'Project/getProdList'}
 }

@@ -56,11 +56,12 @@ module.exports.custom = {
         updateok: "修改成功!",
         updateerr: "修改错误！",
         del: "用户删除成功！",
-        getok: "用户获取成功！"
+        getok: "用户获取成功！",
+        deleted: "此用户已删除！"
     },
     PROJECT: {
         err: "用户名或密码错误！",
-        no: "此用户不存在！",
+        no: "此项目不存在！",
         has: "此项目已存在！",
         add: "创建成功！",
         update: "修改成功!",
@@ -79,7 +80,17 @@ module.exports.custom = {
     SYS: {
         ok: "ok"
     },
+    TASK: {
+        updateok: "添加修改成功！",
+        updateerr: "添加修改失败！"
+    },
     SQLS: {
-        SELECT_ALL_CONFIG:  "SELECT * FROM `sysconfig`"
+        PROJECT_SEARCH:  "SELECT project.id, project.name, project.number, project.prostatus, user.realname AS dutyPersonName FROM project, user WHERE project.dutyPerson = user.id AND project.area = $1 LIMIT $2, $3",
+        PUT_COUNT: "SELECT pid, IFNULL(SUM(workload),0) AS count FROM `task` WHERE period in(1) AND WHERE  GROUP BY pid"
+    },
+    SELECT: {
+        user_select: ["username", "realname", "email", "phone", "userType", "orgCode", "position", "usualPlace", "lastLogin", "visitTimes", "status"],
+        task_select: ["target", "dec", "subProject", "prods"],
+        pro_select: ["name", "area", "prods", "summary", "dutyPerson", "createPerson", "number", "prostatus", "dutyPersonName"]
     }
 };

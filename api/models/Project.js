@@ -7,28 +7,26 @@
 
 /**
  * name: 项目名称
- * belongArea: 所属区域
- * dutyPeople: 责任人
+ * area: 所属区域
+ * dutyPerson: 责任人
+ * createPerson: 创建人
  * prods: 产品
- * target: 目标
+ * summary: 概要
+ * number：项目编号
+ * prostatus：项目状态
+ * wordpath: 项目文档
  */
 module.exports = {
     tableName: "project",
     attributes: {
-        name: {
-            type: 'string'
-        },
-        belongArea: {
-            type: 'number'
-        },
-        dutyPeople: {
-            type: 'number'
-        },
-        prods: {
-            type: 'string'
-        },
-        target: {
-            type: 'string'
-        }
+        name: {type: 'string'},
+        area: {type: 'string'},
+        dutyPerson: {type: 'string'},
+        createPerson: {type: 'string'},
+        prods: {type: 'string'},
+        summary: {type: 'string'},
+        number: {type: 'string'},
+        prostatus: {type: 'string'},
+        wordpath: {type: 'string'}
     }
 };

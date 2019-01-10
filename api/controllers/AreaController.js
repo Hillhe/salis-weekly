@@ -27,7 +27,7 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
-    //跟新区域
+    //更新区域
     async updataOneArea(req, res) {
         try {
             let { id, name } = req.body;

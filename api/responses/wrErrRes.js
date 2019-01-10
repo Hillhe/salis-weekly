@@ -1,6 +1,6 @@
 /**
  *
- * This will be available in controllers as res.myResponse('foo');
+ * This will be available in controllers as res.wrErrRes('foo');
  */
 
 module.exports = function wrErrRes(message, data, code) {
@@ -14,7 +14,7 @@ module.exports = function wrErrRes(message, data, code) {
     result.data = data || [];
     
     if (req.wantsJSON) {
-        sails.log('--------response error---------', JSON.stringify(result));
+        sails.log.error(result);
         return res.json(result);
     }
 }

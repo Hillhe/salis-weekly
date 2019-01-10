@@ -12,11 +12,7 @@
 module.exports = {
     tableName: "area",
     attributes: {
-        name: {
-            type: 'string'
-        },
-        status: {
-            type: 'number'
-        }
+        name: {type: 'string'},
+        status: {type: 'string'}
     }
 };

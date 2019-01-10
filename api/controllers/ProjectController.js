@@ -1,9 +1,35 @@
 let PROJECT_ERR = sails.config.custom.PROJECT;
+let SQLS = sails.config.custom.SQLS;
+let COMMON = sails.config.custom.COMMON;
 module.exports = {
+    //获取项目
+    async getProdList(req, res) {
+        try {
+            let {
+                areaId = 1,
+                pageIndex = COMMON.pageIndex,
+                pageSize = COMMON.pageSize
+            } = req.query;
+            let prods = await sails.sendNativeQuery(SQLS.PROJECT_SEARCH, [areaId, pageIndex * pageSize, (pageIndex + 1) * pageSize]);
+            let putCounts = await sails.sendNativeQuery(SQLS.PUT_COUNT);
+            prods.rows.map(item => {
+                let oneCount = putCounts.rows.filter(count => item.id == count.pid)[0];
+                item.putCount = oneCount ? oneCount.count : 0;
+            })
+            prods.rows.sort((a, b) => {
+                return b.putCount - a.putCount;
+            });
+            res.wrRes(PROJECT_ERR.getOk, prods.rows);
+        } catch (error) {
+            res.wrErrRes(error);
+        }
+    },
     //添加项目
     async createProject(req, res) {
         try {
             let project = req.body;
+            let person = req.session.curuser;
+            project.createPerson = person.id;
             Project.findOrCreate({name: project.name}, project).exec(async(err, project, wasCreated)=> {
                 if (err) { res.wrErrRes(err); }
                 if (!wasCreated && project) {
@@ -20,9 +46,11 @@ module.exports = {
     async deleteProject(req, res) {
         try {
             let prodId = req.param('id');
-            let prod = await Project.destroyOne({id: prodId});
+            let prod = await Project.updateOne({id: prodId}).set({status: COMMON.deleted});
             if (prod) {
                 res.wrRes(PROJECT_ERR.del);
+            } else {
+                res.wrRes(PROJECT_ERR.no);
             }
         } catch (error) {
             res.wrErrRes(error);
@@ -56,17 +84,7 @@ module.exports = {
     async getProdByPersonId(req, res) {
         try {
             let prodPersonId = parseInt(req.param('dutyId'));
-            var prods = await Project.find({ dutyPeople: prodPersonId });
-            res.wrRes(PROJECT_ERR.getOk, prods);
-        } catch (error) {
-            res.wrErrRes(error);
-        }
-    },
-    //获取区域项目
-    async getProdByAreaId(req, res) {
-        try {
-            let prodAreaId = parseInt(req.param('areaId'));
-            var prods = await Project.find({ belongArea: prodAreaId });
+            var prods = await Project.find({ dutyPerson: prodPersonId });
             res.wrRes(PROJECT_ERR.getOk, prods);
         } catch (error) {
             res.wrErrRes(error);

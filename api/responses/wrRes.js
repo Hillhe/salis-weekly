@@ -15,7 +15,7 @@ module.exports = function wrRes(message, data, code) {
     
     // If the user-agent wants a JSON response, send json
     if (req.wantsJSON) {
-        sails.log('--------response---------', JSON.stringify(result));
+        sails.log.info(JSON.stringify(result));
         return res.json(result);
     }
 }

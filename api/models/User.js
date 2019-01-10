@@ -23,44 +23,18 @@
 module.exports = {
     tableName: "user",
     attributes: {
-        username: {
-            type: 'string'
-        },
-        realname: {
-            type: 'string'
-        },
-        password: {
-            type: 'string'
-        },
-        email: {
-            type: 'string'
-        },
-        phone: {
-            type: 'string'
-        },
-        avatar: {
-            type: 'string'
-        },
-        userType: {
-            type: 'number'
-        },
-        orgCode: {
-            type: 'string'
-        },
-        position: {
-            type: 'string'
-        },
-        usualPlace: {
-            type: 'string'
-        },
-        lastLogin:{
-            type: 'string'
-        },
-        visitTimes: {
-            type: 'number'
-        },
-        status: {
-            type: 'number'
-        }
+        username: {type: 'string'},
+        realname: {type: 'string'},
+        password: {type: 'string'},
+        email: {type: 'string'},
+        phone: {type: 'string'},
+        avatar: {type: 'string'},
+        userType: {type: 'string'},
+        orgCode: {type: 'string'},
+        position: {type: 'string'},
+        usualPlace: {type: 'string'},
+        lastLogin:{type: 'string'},
+        visitTimes: {type: 'string'},
+        status: {type: 'string'}
     }
 };

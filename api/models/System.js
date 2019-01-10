@@ -13,14 +13,8 @@
 module.exports = {
     tableName: "sysconfig",
     attributes: {
-        key: {
-            type: 'string'
-        },
-        value: {
-            type: 'string'
-        },
-        name: {
-            type: 'string'
-        }
+        key: {type: 'string'},
+        value: {type: 'string'},
+        name: {type: 'string'}
     }
 };

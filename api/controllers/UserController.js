@@ -1,6 +1,7 @@
 let moment = require('moment');
 let USER_ERR = sails.config.custom.USER;
 let COMMON = sails.config.custom.COMMON;
+let SELECT = sails.config.custom.SELECT;
 module.exports = {
     //用户登陆
     async login(req, res) {
@@ -10,7 +11,9 @@ module.exports = {
             if (!user) {
                 res.wrRes(USER_ERR.no);
             } else {
-                if (user.password == password) {
+                if(user.status == COMMON.deleted) {
+                    res.wrRes(USER_ERR.deleted);
+                } else if (user.password == password) {
                     var updatedUser = await User.updateOne({id: user.id}).set({lastLogin: moment().format('x'), visitTimes: ++user.visitTimes});
                     //保存到session
                     req.session.curuser = updatedUser;
@@ -105,7 +108,8 @@ module.exports = {
                     ],
                     orgCode: {contains: org },
                     status: { '!=' : COMMON.deleted }
-                }
+                },
+                select: SELECT.user_select
             })
             res.wrRes(USER_ERR.getok, users);
         } catch (error) {
