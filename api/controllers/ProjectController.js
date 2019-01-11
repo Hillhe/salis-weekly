@@ -16,9 +16,7 @@ module.exports = {
                 let oneCount = putCounts.rows.filter(count => item.id == count.pid)[0];
                 item.putCount = oneCount ? oneCount.count : 0;
             })
-            prods.rows.sort((a, b) => {
-                return b.putCount - a.putCount;
-            });
+            prods.rows.sort((a, b) => {return b.putCount - a.putCount;});
             res.wrRes(PROJECT_ERR.getOk, prods.rows);
         } catch (error) {
             res.wrErrRes(error);

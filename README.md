@@ -12,21 +12,29 @@ a [Sails v1](https://sailsjs.com) application
 + [Professional / enterprise options](https://sailsjs.com/enterprise)
 
 
-### Version info
+## 启动--本地
 
-This app was originally generated on Wed Jan 02 2019 12:42:14 GMT+0800 (GMT+08:00) using Sails v1.1.0.
-
-<!-- Internally, Sails used [`sails-generate@1.16.4`](https://github.com/balderdashy/sails-generate/tree/v1.16.4/lib/core-generators/new). -->
-
-## 启动
-
-```
 # install dependency
 npm install
 
 # develop
 sails lift / npm run dev 
 
-# production
-npm run start
-```
+
+
+## 启动--服务器
+
+# install dependency
+npm install
+
+# start
+forever start ./forever.json
+
+
+# stop
+forever stopall
+
+# 日志
+/home/weekly-reports/www/logs/forever.log
+/home/weekly-reports/www/logs/out.log
+/home/weekly-reports/www/logs/error.log

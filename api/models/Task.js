@@ -8,6 +8,7 @@
 /**
  * pid: 所属项目id
  * period: 周期
+ * areaId: 区域id
  * target: 目标
  * dec: 描述
  * subProject: 所属子项
@@ -31,6 +32,7 @@ module.exports = {
     attributes: {
         pid: {type: 'string'},
         period: {type: 'string'},
+        areaId: {type: 'string'},
         target: {type: 'string'},
         dec: {type: 'string'},
         subProject: {type: 'string'},

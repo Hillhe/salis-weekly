@@ -26,9 +26,7 @@ module.exports = {
             let treeRoot = orgs.filter(item => item.parentId == COMMON.rootParentId);
             treeRoot.map(root => {
                 root.children = orgs.filter(item => item.parentId == root.orgCode);
-                root.children.map(child => {
-                    child.children = users.filter(user => user.orgCode == child.orgCode);
-                });
+                root.children.map(child => {child.children = users.filter(user => user.orgCode == child.orgCode);});
             });
             res.wrRes(SYS.ok, treeRoot);
         } catch (error) {

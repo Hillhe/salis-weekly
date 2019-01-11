@@ -15,6 +15,8 @@
  * number：项目编号
  * prostatus：项目状态
  * wordpath: 项目文档
+ * status: 状态
+ * remark:备注
  */
 module.exports = {
     tableName: "project",
@@ -27,6 +29,8 @@ module.exports = {
         summary: {type: 'string'},
         number: {type: 'string'},
         prostatus: {type: 'string'},
-        wordpath: {type: 'string'}
+        wordpath: {type: 'string'},
+        status: {type: 'string'},
+        remark: {type: 'string'},
     }
 };

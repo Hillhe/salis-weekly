@@ -18,8 +18,11 @@ module.exports.session = {
   * of your users, forcing them to log in again.                             *
   *                                                                          *
   ***************************************************************************/
-  secret: '044d97bd445d11487b861a7be2e1c21b',
-  secure: true
+  
+  secret: 'extremely-secure-keyboard-cat',
+  cookie: {
+    maxAge: 60 * 60 * 1000  // 1 hours
+  }
 
   /***************************************************************************
   *                                                                          *

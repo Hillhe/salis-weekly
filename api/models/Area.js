@@ -6,13 +6,13 @@
  */
 
 /**
- * name: 名称
+ * areaname: 名称
  * status: 状态
  */
 module.exports = {
     tableName: "area",
     attributes: {
-        name: {type: 'string'},
+        areaname: {type: 'string'},
         status: {type: 'string'}
     }
 };

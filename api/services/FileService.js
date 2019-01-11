@@ -1,51 +1,70 @@
 let Excel = require('exceljs');
+let moment = require("moment");
 let EXCELCONF = sails.config.custom.EXCEL;
-let mockData = require("./mock");
+let SQLS = sails.config.custom.SQLS;
 let start = 2;
 let end = 2;
 
 
-
-function addProject(sheet, data) {
-    if (!data || data.length == 0) {
-        return;
-    }
+function addProject(sheet, data, dict) {
+    if (!data || data.length == 0) {return}
     start = end;
-    end += data.length;
-    data.map(item => {
-        let tasks = item.children;
+    end += data.projects.length;
+    data.projects.map((p, index) => {
+        let tasks = p.tasks;
         end += tasks.length;
-        delete item.children;
-        let proRow = sheet.addRow(item);
+        //添加项目
+        p.areaname = data.areaname;
+        p.taskDutyPerson = p.dutyPerson;
+        p.taskStatus = getValue(dict.SUPPORT_TYPE, p.prostatus);
+        p.index = index+1;
+        p.prods = getValue(dict.PRODUCTS, p.prods);
+        let proRow = sheet.addRow(p);
         proRow.alignment = { vertical: 'middle'};
         proRow.height = 25;
-        proRow.eachCell(function(cell) {
+        proRow.eachCell({includeEmpty: true}, function(cell) {
             cell.fill = EXCELCONF.fills.project;
+            cell.font = {bold: true, color: { argb: 'FF436EEE' }};
         });
-        if (tasks && tasks.length > 0) {
-            sheet.addRows(tasks);
-        }
+        //添加任务
+        tasks.map((t, i) => {
+            t.index = i+1;
+            t.period = getValue(dict.TASK_PERIOD, t.period);
+            t.taskType = getValue(dict.TASK_TYPE, t.taskType);
+            t.prods = getValue(dict.PRODUCTS, t.prods);
+            t.startDate = moment(parseInt(t.startDate)).format('YYYY/MM/DD');
+            t.endDate = moment(parseInt(t.endDate)).format('YYYY/MM/DD');
+            t.progress = getValue(dict.TASK_PROGRESS, t.progress);
+            t.taskStatus = getValue(dict.PRO_STATUS, t.taskStatus);
+            sheet.addRow(t);
+        });
     });
     sheet.mergeCells("A"+start, "A"+(end-1));
     sheet.getCell("A"+start).fill = EXCELCONF.fills.task;
 }
 
-function addProjSet(sheet, data) {
-    if (!data || Object.values(data).length == 0) {
-        return;
-    }
-    Object.values(data).map(item => {
-        addProject(sheet, item);
-    });
+function addProjSet(sheet, data, dict) {
+    if (!data || data.length == 0) {return}
+    Object.values(data).map(item => {addProject(sheet, item, dict)});
 }
 
+function getValue(dict, keys) {
+    if(!keys || !dict) return "";
+    keys = keys.split(",");
+    let matchs = Object.values(dict).filter(d => keys.includes(d.key+""));
+    let values = matchs.map(m => m.value);
+    return values.join("、");
+}
 
 module.exports = {
-    makeExcel() {
+    async makeExcel() {
         //创建表格
         var workbook = new Excel.Workbook();
         //创建工作簿
-        var wrSheet = workbook.addWorksheet('周报', {properties: {showGridLines: true}});
+        var wrSheet = workbook.addWorksheet(moment().format('YYYY-MM-DD周报'), {
+            properties: {showGridLines: true},
+            views:[{showGridLines: true}]
+        });
         //添加列
         wrSheet.columns = EXCELCONF.columns;
         //设置首行样式
@@ -56,8 +75,12 @@ module.exports = {
             cell.fill = EXCELCONF.fills.header;
             cell.font = {bold: true};
         });
-        
-        addProjSet(wrSheet, mockData);
+
+        let data = await this.getExcelData();
+
+        addProjSet(wrSheet, data.areas, data.dict);
+
+
         var periodCol = wrSheet.getColumn('period');
         periodCol.eachCell(function(cell) {
             if (cell.value == "本周") {
@@ -66,12 +89,26 @@ module.exports = {
                 cell.fill = {type: "pattern", pattern: "solid", fgColor: { argb: "FFEEE0E5" }}
             }
         });
-
-        var filename = 'test.xlsx';
-        workbook.xlsx.writeFile(filename).then(function () {
-            console.log('success');
+        var filename = moment().format('YYYY-MM-DD周报')+".xlsx";
+        workbook.xlsx.writeFile(filename).then(function (res) {
+            console.log('success', res);
         }, function (err) {
             console.log(err);
         });
+    },
+    async getExcelData() {
+        try {
+            let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
+            let endDate =  moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
+            let areas = await Area.find();
+            let projects = await sails.sendNativeQuery(SQLS.EXCEL_PROJECT);
+            let tasks = await sails.sendNativeQuery(SQLS.TASK_LIST, [startDate, endDate]);
+            projects.rows.map(p => {p.tasks = tasks.rows.filter(t => t.pid == p.id)});
+            areas.map(a => {a.projects = projects.rows.filter(p => p.area == a.id);});
+            let dict = await System.findOne({where: {key: 'dict'}, select: ['value']});
+            return await {areas: areas, dict: JSON.parse(dict.value)};
+        } catch (error) {
+            throw error;
+        }
     }
 }

@@ -6,7 +6,7 @@ module.exports = {
     //用户登陆
     async login(req, res) {
         try {
-            let {name, password} = req.body;
+            let {name = "", password = ""} = req.body;
             let user = await User.findOne({or: [{username: name}, {email: name}, {realname: name}]});
             if (!user) {
                 res.wrRes(USER_ERR.no);

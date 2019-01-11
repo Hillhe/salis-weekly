@@ -1,0 +1,9 @@
+{
+    "uid": "app",
+    "append": true,
+    "script": "app.js",
+    "sourceDir": "/home/weekly-reports/www",
+    "logFile": "/home/weekly-reports/www/logs/forever.log",
+    "outFile": "/home/weekly-reports/www/logs/out.log",
+    "errFile": "/home/weekly-reports/www/logs/error.log"
+}

@@ -14,7 +14,7 @@ module.exports = {
     async addOneArea(req, res) {
         try {
             let { name } = req.body;
-            Area.findOrCreate({ name: name }, {name: name}).exec(async (err, area, wasCreated) => {
+            Area.findOrCreate({ areaname: name }, {areaname: name}).exec(async (err, area, wasCreated) => {
                 if (err) { res.wrErrRes(err); }
                 let areas = await Area.find({status: { '!=' : COMMON.deleted }});
                 if (!wasCreated && area) {
@@ -31,7 +31,7 @@ module.exports = {
     async updataOneArea(req, res) {
         try {
             let { id, name } = req.body;
-            var updateArea = await Area.updateOne({ id: id }).set({ name: name });
+            var updateArea = await Area.updateOne({ id: id }).set({ areaname: name });
             if (updateArea) {
                 res.wrRes(AREA_ERR.success, updateArea);
             } else {
@@ -45,7 +45,7 @@ module.exports = {
     async delOneArea(req, res) {
         try {
             let areaId = req.param('id');
-            let area = await Area.updateOne({id: areaId}).set({status: 1});
+            let area = await Area.updateOne({id: areaId}).set({status: COMMON.deleted});
             res.wrRes(AREA_ERR.success);
         } catch (error) {
             res.wrErrRes(error);

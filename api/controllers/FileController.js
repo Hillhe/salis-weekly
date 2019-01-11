@@ -5,6 +5,7 @@ function resolve(dir) {
     return path.join(__dirname, "../../", dir);
 }
 module.exports = {
+    //上传文件
     async upload(req, res) {
         try {
             req.file('file').upload({
@@ -25,6 +26,7 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
+    //导出excel
     async export(req, res) {
         FileService.makeExcel();
     }
