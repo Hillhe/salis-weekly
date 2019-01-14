@@ -48,7 +48,7 @@ module.exports = {
         endDate: {type: 'string'},
         progress: {type: 'string'},
         taskStatus: {type: 'string'},
-        status: {type: 'string'},
+        status: {type: 'string', defaultsTo: '0'},
         remark: {type: 'string'}
     }
 };

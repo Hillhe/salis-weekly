@@ -18,13 +18,14 @@ module.exports.custom = {
     COMMON: {
         normal: 0,
         deleted: 1,
+        isSuperAdminFlag: 1,
         rootParentId: -1,
         pageIndex: 0,
         pageSize: 10
     },
-    upload:{
+    FILECONF:{
         maxBytes: 1000000,
-        imgpath: "/assets/imgs"
+        imgOutPath: "/assets/imgs"
     },
     EXCEL: {
         title: ["集成研发部_周工作计划详情"],
@@ -54,12 +55,15 @@ module.exports.custom = {
             project: { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFD39B" } },
             task: {type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } },
             proSet: {type: "pattern", pattern: "solid", fgColor: { argb: "FFFF7F00" } }
-        }
+        },
+        wrOutPath: "/home/weekly-reports/outfiles/excel/",
+        wrExcelName: "YYYYMMDD(第w周)西北-集成研发部_周会_项目梳理",
+        wrPrefix: "/load_excel/"
     },
     USER: {
         success: "成功！",
         logok: "登录成功！",
-        logerr: "用户名或密码错误！",
+        logerr: "密码错误！",
         no: "此用户不存在！",
         has: "此用户已存在！",
         add: "用户创建成功！",
@@ -70,7 +74,7 @@ module.exports.custom = {
         deleted: "此用户已删除！"
     },
     PROJECT: {
-        err: "用户名或密码错误！",
+        err: "错误！",
         no: "此项目不存在！",
         has: "此项目已存在！",
         add: "创建成功！",
@@ -95,14 +99,19 @@ module.exports.custom = {
         updateerr: "添加修改失败！"
     },
     SQLS: {
-        PROJECT_SEARCH:  "SELECT project.id, project.name, project.number, project.prostatus, user.realname AS dutyPersonName FROM project, user WHERE project.dutyPerson = user.id AND project.area = $1 LIMIT $2, $3",
-        PUT_COUNT: "SELECT pid, IFNULL(SUM(workload),0) AS count FROM task WHERE period in(1) AND WHERE  GROUP BY pid",
-        TASK_LIST: "SELECT task.*, user.realname AS dutyPersonName FROM task, user WHERE task.taskDutyPerson = user.id AND task.createdAt BETWEEN $1 AND $2 ORDER BY period ASC",
-        EXCEL_PROJECT: "SELECT project.*, user.realname AS dutyPersonName FROM project, user WHERE project.dutyPerson = user.id"
+        PROJECT_SEARCH:  "SELECT p.id, p.name, p.number, p.prostatus, u.realname AS dutyPersonName FROM project AS p LEFT JOIN user AS u ON u.id = p.dutyPerson AND p.status != 1 AND p.area = $1 LIMIT $2, $3",
+        PUT_COUNT: "SELECT pid, IFNULL(SUM(workload),0) AS count FROM task WHERE period in(1) AND task.status != 1 GROUP BY pid",
+        TASK_LIST: "SELECT t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson AND t.status != 1 AND t.createdAt BETWEEN $1 AND $2 ORDER BY t.period ASC",
+        EXCEL_PROJECT: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p LEFT JOIN user AS u ON p.dutyPerson = u.id",
+        PROJECT_DETAIL: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p INNER JOIN user AS u ON p.id = $1 AND u.id = p.dutyPerson AND p.status != 1"
     },
     SELECT: {
         user_select: ["username", "realname", "email", "phone", "userType", "orgCode", "position", "usualPlace", "lastLogin", "visitTimes", "status"],
         task_select: ["target", "dec", "subProject", "prods"],
         pro_select: ["name", "area", "prods", "summary", "dutyPerson", "createPerson", "number", "prostatus", "dutyPersonName"]
+    },
+    FILE: {
+        exportok: "导出成功！",
+        uploadok: "上传成功！"
     }
 };

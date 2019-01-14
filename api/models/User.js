@@ -35,6 +35,6 @@ module.exports = {
         usualPlace: {type: 'string'},
         lastLogin:{type: 'string'},
         visitTimes: {type: 'string'},
-        status: {type: 'string'}
+        status: {type: 'string', defaultsTo: '0'}
     }
 };

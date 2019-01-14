@@ -25,7 +25,7 @@ module.exports = {
         try {
             let {startDate = "", endDate = "", period = 0, taskType = 0, prods = '',
                 taskDutyPerson = 0,taskStatus = 0} = req.query;
-            let params = {taskType: taskType,taskDutyPerson: taskDutyPerson,taskStatus: taskStatus};
+            let params = {taskType: taskType, taskDutyPerson: taskDutyPerson, taskStatus: taskStatus};
             if (!startDate && !endDate && period == 0) {
                 startDate = moment().startOf('isoWeek').format('x');
                 endDate = moment().endOf('isoWeek').format('x');
@@ -41,8 +41,7 @@ module.exports = {
                     endDate: {'<=': endDate},
                     prods: {contains: prods},
                     status: { '!=' : COMMON.deleted }
-                }, params),
-                select: SELECT.task_select
+                }, params)
             }).sort("period ASC");
             res.wrRes(TASK.ok, tasks);
         } catch (error) {
@@ -52,27 +51,11 @@ module.exports = {
     //导入上周数据
     async importLastWeekTask(req, res) {
         try {
+            sails.log(111);
             let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
             let endDate =  moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
             let tasks = await sails.sendNativeQuery(SQLS.TASK_LIST, [startDate, endDate]);
             res.wrRes(TASK.ok, tasks.rows);
-        } catch (error) {
-            res.wrErrRes(error);
-        }
-    },
-    async getExcelData(req, res) {
-        try {
-            // let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
-            // let endDate =  moment().endOf('isoWeek').format('x'); // 本周日 23时59分59秒
-            let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
-            let endDate =  moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
-            let areas = await Area.find();
-            let projects = await Project.find();
-            let tasks = await sails.sendNativeQuery(SQLS.TASK_LIST, [startDate, endDate]);
-            projects.map(p => {p.tasks = tasks.rows.filter(t => t.pid == p.id)});
-            areas.map(a => {a.projects = projects.filter(p => p.area == a.id);});
-            let dict = await System.find({where: {key: 'dict'}, select: ['value']});
-            res.wrRes("ok", dict);
         } catch (error) {
             res.wrErrRes(error);
         }

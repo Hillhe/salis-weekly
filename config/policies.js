@@ -21,5 +21,27 @@ module.exports.policies = {
     '*': 'is-logged-in',
     // Bypass the `is-logged-in` policy for:
     'user/login': true,
-    'user/createUser': true,
+
+    UserController: {
+        createUser: 'is-super-admin',
+        deleteUser: 'is-super-admin',
+    },
+    AreaController: {
+        addOneArea: 'is-super-admin',
+        updataOneArea: 'is-super-admin',
+        delOneArea: 'is-super-admin',
+    },
+    ProjectController: {
+        createProject: 'is-super-admin',
+        deleteProject: 'is-super-admin',
+        updateProdById: 'is-super-admin',
+    },
+    FileController: {
+        exportWeeklyExcel: 'is-super-admin',
+        upload: 'is-super-admin',
+    },
+    TaskController: {
+        create: 'is-super-admin',
+        importLastWeekTask: 'is-super-admin',
+    }
 };

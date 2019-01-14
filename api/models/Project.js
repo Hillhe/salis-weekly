@@ -30,7 +30,7 @@ module.exports = {
         number: {type: 'string'},
         prostatus: {type: 'string'},
         wordpath: {type: 'string'},
-        status: {type: 'string'},
+        status: {type: 'string', defaultsTo: '0'},
         remark: {type: 'string'},
     }
 };

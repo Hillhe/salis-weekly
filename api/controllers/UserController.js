@@ -17,6 +17,7 @@ module.exports = {
                     var updatedUser = await User.updateOne({id: user.id}).set({lastLogin: moment().format('x'), visitTimes: ++user.visitTimes});
                     //保存到session
                     req.session.curuser = updatedUser;
+                    req.session.isSuperAdmin = (updatedUser.userType == COMMON.isSuperAdminFlag) ? true: false;
                     res.wrRes(USER_ERR.logok, updatedUser);
                 } else {
                     res.wrRes(USER_ERR.logerr);

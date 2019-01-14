@@ -72,8 +72,8 @@ module.exports = {
     async getProdById(req, res) {
         try {
             let prodId = parseInt(req.param('id'));
-            var prod = await Project.findOne({id: prodId});
-            res.wrRes(PROJECT_ERR.getOk, prod);
+            var prod = await sails.sendNativeQuery(SQLS.PROJECT_DETAIL, [prodId]);
+            res.wrRes(PROJECT_ERR.getOk, prod.rows);
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -81,8 +81,13 @@ module.exports = {
     //获取责任人项目
     async getProdByPersonId(req, res) {
         try {
-            let prodPersonId = parseInt(req.param('dutyId'));
-            var prods = await Project.find({ dutyPerson: prodPersonId });
+            let prodPersonId = parseInt(req.param('dutyId'));PROJECT_DETAIL
+            var prods = await Project.find({
+                where: {
+                    dutyPerson: prodPersonId,
+                    status: { '!=' : COMMON.deleted }
+                }
+            });
             res.wrRes(PROJECT_ERR.getOk, prods);
         } catch (error) {
             res.wrErrRes(error);

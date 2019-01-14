@@ -22,7 +22,14 @@ module.exports = {
         try {
             let { type = 'org'} = req.query;
             let orgs = await Org.find(), users = []; 
-            if(type == "user") {users = await User.find({select: SELECT.user_select})};
+            if(type == "user") {
+                users = await User.find({
+                    where: {
+                        status: { '!=' : COMMON.deleted }
+                    },
+                    select: SELECT.user_select
+                })
+            };
             let treeRoot = orgs.filter(item => item.parentId == COMMON.rootParentId);
             treeRoot.map(root => {
                 root.children = orgs.filter(item => item.parentId == root.orgCode);

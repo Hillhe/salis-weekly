@@ -15,7 +15,7 @@ module.exports = async function (req, res, proceed) {
   // or, if this is the last policy, the relevant action.
   // > For more about where `req.session.isLogin` comes from, check out this app's
   // > custom hook (`api/hooks/custom/index.js`).
-  if (req.session.isLogin || true) {
+  if (req.session.curuser) {
     return proceed();
   }
 

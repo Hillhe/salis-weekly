@@ -13,6 +13,6 @@ module.exports = {
     tableName: "area",
     attributes: {
         areaname: {type: 'string'},
-        status: {type: 'string'}
+        status: {type: 'string', defaultsTo: '0'}
     }
 };
