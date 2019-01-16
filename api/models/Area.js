@@ -12,7 +12,7 @@
 module.exports = {
     tableName: "area",
     attributes: {
-        areaname: {type: 'string'},
+        areaname: {type: 'string',required: true},
         status: {type: 'string', defaultsTo: '0'}
     }
 };

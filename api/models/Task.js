@@ -15,6 +15,7 @@
  * resType: 需求类型
  * sonType: 子类型
  * deliveryType: 交付方式
+ * level: 优先级
  * prods: 产品
  * version: 版本号
  * proDutyPerson: 所属项目责任人id
@@ -30,22 +31,23 @@
 module.exports = {
     tableName: "task",
     attributes: {
-        pid: {type: 'string'},
+        pid: {type: 'string', required: true},
         period: {type: 'string'},
-        areaId: {type: 'string'},
+        areaId: {type: 'string', required: true},
         target: {type: 'string'},
         dec: {type: 'string'},
         subProject: {type: 'string'},
         taskType: {type: 'string'},
         sonType: {type: 'string'},
         deliveryType: {type: 'string'},
+        level: {type: 'string'},
         prods: {type: 'string'},
         version: {type: 'string'},
         proDutyPerson: {type: 'string'},
         taskDutyPerson: {type: 'string'},
-        workload: {type: 'string'},
-        startDate: {type: 'string'},
-        endDate: {type: 'string'},
+        workload: {type: 'string', required: true},
+        startDate: {type: 'string', required: true},
+        endDate: {type: 'string', required: true},
         progress: {type: 'string'},
         taskStatus: {type: 'string'},
         status: {type: 'string', defaultsTo: '0'},

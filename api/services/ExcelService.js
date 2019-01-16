@@ -1,3 +1,4 @@
+//只作为测试使用
 let Excel = require('exceljs');
 let moment = require("moment");
 let EXCELCONF = sails.config.custom.EXCEL;
@@ -64,8 +65,8 @@ module.exports = {
 
             //生成表格
             let filename = moment().format(EXCELCONF.wrExcelName)+".xlsx";
-            workbook.xlsx.writeFile(EXCELCONF.wrOutPath+filename).then(res => {
-                cb(EXCELCONF.wrPrefix + filename);
+            workbook.xlsx.writeFile(filename).then(res => {
+                cb(filename);
             }, function (error) {
                 throw error
             });

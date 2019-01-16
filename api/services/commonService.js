@@ -1,6 +1,7 @@
 module.exports = {
+    //根据id批量更新
     async batchUpdateById(Model, data) {
-        if(!data || data.length == 0) Promise.resolve([]);
+        if(!data || data.length == 0) return Promise.resolve([]);
         let tasks = [];
         for (let i = 0; i < data.length; i++) {
             const ele = data[i];

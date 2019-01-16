@@ -80,16 +80,15 @@ module.exports = {
     async updateInfo(req, res) {
         try {
             let newUser = req.body;
-            let user = await User.findOne({id: newUser.id});
-            if (!user) {
-                res.wrRes(USER_ERR.no, user);
-            } else {
-                if (user.password == newUser.password) {
-                    var updatedUser = await User.updateOne({id: user.id}).set(newUser);
+            if (newUser && !!newUser.id) {
+                let updatedUser = await User.updateOne({id: newUser.id}).set(newUser);
+                if (updatedUser) {
                     res.wrRes(USER_ERR.updateok, updatedUser);
                 } else {
-                    res.wrRes(USER_ERR.updateerr);
+                    res.wrRes(USER_ERR.no);
                 }
+            } else {
+                res.wrRes(USER_ERR.updateerr);
             }
         } catch (error) {
             res.wrErrRes(error);
@@ -99,9 +98,17 @@ module.exports = {
     async getUserList(req, res) {
         try {
             let { pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize, name = "", org = ""} = req.query;
+            let total = await User.count({
+                where: {
+                    or: [
+                        { username: {contains: name }},
+                        { realname: {contains: name }}
+                    ],
+                    orgCode: {contains: org },
+                    status: { '!=' : COMMON.deleted }
+                }
+            });
             let users = await User.find({
-                skip: pageIndex,
-                limit: pageSize,
                 where: {
                     or: [
                         { username: {contains: name }},
@@ -110,9 +117,17 @@ module.exports = {
                     orgCode: {contains: org },
                     status: { '!=' : COMMON.deleted }
                 },
+                skip: (parseInt(pageIndex) -1) * parseInt(pageSize),
+                limit: parseInt(pageSize),
                 select: SELECT.user_select
-            })
-            res.wrRes(USER_ERR.getok, users);
+            });
+            let result = {
+                total: total,
+                pageIndex: parseInt(pageIndex),
+                pageSize: parseInt(pageSize),
+                list: users
+            }
+            res.wrRes(USER_ERR.getok, result);
         } catch (error) {
             res.wrErrRes(error);
         }

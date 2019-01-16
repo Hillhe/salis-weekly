@@ -10,14 +10,21 @@ module.exports = {
                 pageIndex = COMMON.pageIndex,
                 pageSize = COMMON.pageSize
             } = req.query;
-            let prods = await sails.sendNativeQuery(SQLS.PROJECT_SEARCH, [areaId, pageIndex * pageSize, (pageIndex + 1) * pageSize]);
+            let total = await Project.count({where: {status: { '!=' : COMMON.deleted }, area: areaId}});
+            let prods = await sails.sendNativeQuery(SQLS.PROJECT_SEARCH, [areaId, (parseInt(pageIndex - 1)) * parseInt(pageSize), pageSize]);
             let putCounts = await sails.sendNativeQuery(SQLS.PUT_COUNT);
             prods.rows.map(item => {
                 let oneCount = putCounts.rows.filter(count => item.id == count.pid)[0];
                 item.putCount = oneCount ? oneCount.count : 0;
             })
             prods.rows.sort((a, b) => {return b.putCount - a.putCount;});
-            res.wrRes(PROJECT_ERR.getOk, prods.rows);
+            let result = {
+                total: total,
+                pageIndex: pageIndex,
+                pageSize: pageSize,
+                list: prods.rows
+            };
+            res.wrRes(PROJECT_ERR.getOk, result);
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -27,7 +34,7 @@ module.exports = {
         try {
             let project = req.body;
             let person = req.session.curuser;
-            project.createPerson = person.id;
+            project.createPerson = person ? person.id : "";
             Project.findOrCreate({name: project.name}, project).exec(async(err, project, wasCreated)=> {
                 if (err) { res.wrErrRes(err); }
                 if (!wasCreated && project) {
@@ -71,9 +78,13 @@ module.exports = {
     //根据id获取项目
     async getProdById(req, res) {
         try {
-            let prodId = parseInt(req.param('id'));
-            var prod = await sails.sendNativeQuery(SQLS.PROJECT_DETAIL, [prodId]);
-            res.wrRes(PROJECT_ERR.getOk, prod.rows);
+            let { id } = req.query;
+            var prod = await sails.sendNativeQuery(SQLS.PROJECT_DETAIL, [id]);
+            if (prod) {
+                res.wrRes(PROJECT_ERR.getOk, prod.rows);
+            } else {
+                res.wrRes(PROJECT_ERR.no);
+            }
         } catch (error) {
             res.wrErrRes(error);
         }

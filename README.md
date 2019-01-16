@@ -28,13 +28,13 @@ sails lift / npm run dev
 npm install
 
 # start
-forever start ./forever.json
+forever start ./start.json
 
 
 # stop
 forever stopall
 
 # 日志
-/home/weekly-reports/www/logs/forever.log
+/home/weekly-reports/www/logs/logs.log
 /home/weekly-reports/www/logs/out.log
 /home/weekly-reports/www/logs/error.log

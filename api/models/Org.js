@@ -14,9 +14,9 @@
 module.exports = {
     tableName: "org",
     attributes: {
-        orgCode: {type: 'string'},
-        orgName: {type: 'string'},
-        parentId: {type: 'string'},
-        dutyPerson: {type: 'string'}
+        orgCode: {type: 'string', required: true},
+        orgName: {type: 'string', required: true},
+        parentId: {type: 'string', required: true},
+        dutyPerson: {type: 'string', required: true}
     }
 };
