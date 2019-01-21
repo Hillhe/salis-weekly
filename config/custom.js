@@ -21,7 +21,8 @@ module.exports.custom = {
         isSuperAdminFlag: 1,
         rootParentId: -1,
         pageIndex: 1,
-        pageSize: 10
+        pageSize: 10,
+        adminType: "2"
     },
     FILECONF: {
         maxBytes: 1000000,
@@ -89,56 +90,59 @@ module.exports.custom = {
         wrPrefix: "/excel/"
     },
     USER: {
-        success: "成功！",
-        logok: "登录成功！",
-        logerr: "密码错误！",
-        no: "此用户不存在！",
-        has: "此用户已存在！",
-        add: "用户创建成功！",
-        updateok: "修改成功!",
-        updateerr: "修改错误！",
-        del: "用户删除成功！",
-        getok: "用户获取成功！",
-        deleted: "此用户已删除！"
+        success: {code: 200, msg: "成功！"},
+        logok: {code: 200, msg: "登录成功！"},
+        add: {code: 200, msg: "用户创建成功！"},
+        del: {code: 200, msg: "用户删除成功！"},
+        updateok: {code: 200, msg: "修改成功!"},
+        getok: {code: 200, msg: "用户获取成功！"},
+        logerr: {code: 1001, msg: "密码错误！"} ,
+        no: {code: 1002, msg: "此用户不存在！"},
+        has: {code: 1003, msg: "此用户已存在！"},
+        updateerr: {code: 1004, msg: "修改错误！"},
+        deleted: {code: 1005, msg: "此用户已删除！"}
     },
     PROJECT: {
-        err: "错误！",
-        no: "此项目不存在！",
-        has: "此项目已存在！",
-        add: "创建成功！",
-        update: "修改成功!",
-        updateErr: "修改失败!",
-        del: "删除成功！",
-        getOk: "查找成功！"
+        del: {code: 200, msg: "删除成功！"},
+        getOk: {code: 200, msg: "查找成功！"},
+        add: {code: 200, msg: "创建成功！"},
+        update: {code: 200, msg: "项目修改成功!"},
+        err: {code: 1006, msg: "错误！"},
+        no: {code: 1007, msg: "此项目不存在！"},
+        has: {code: 1008, msg: "此项目已存在！"},
+        updateErr: {code: 1009, msg: "项目修改失败!"}
     },
     UPLOAD: {
-        success: "上传成功！",
+        success: {code: 200, msg: "上传成功！"},
     },
     AREA: {
-        success: "成功！",
-        has: "已存在！",
-        no: "此项目集不存在！"
+        success: {code: 200, msg: "成功！"},
+        has: {code: 1010, msg: "已存在！"},
+        no: {code: 1011, msg: "此项目集不存在！"}
     },
     SYS: {
-        ok: "ok"
+        ok: {code: 200, msg: "ok"}
     },
     TASK: {
-        updateok: "添加修改成功！",
-        updateerr: "添加修改失败！"
+        updateok: {code: 200, msg: "添加修改成功！"},
+        updateerr: {code: 1021, msg: "添加修改失败！"},
+        ok: {code: 200, msg: "查询成功!"}
     },
     SQLS: {
-        PROJECT_SEARCH: "SELECT p.id, p.name, p.number, p.prostatus, p.dutyPerson, u.realname AS dutyPersonName FROM project AS p INNER JOIN user AS u ON u.id = p.dutyPerson AND p.status != 1 AND p.area = $1 LIMIT $2, $3",
-        PUT_COUNT: "SELECT pid, IFNULL(SUM(workload),0) AS count FROM task WHERE period in(1) AND task.status != 1 GROUP BY pid",
-        TASK_LIST: "SELECT t.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson AND t.status != 1 AND t.createdAt BETWEEN $1 AND $2 ORDER BY t.period ASC",
-        EXCEL_PROJECT: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p INNER JOIN user AS u ON p.dutyPerson = u.id",
-        PROJECT_DETAIL: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p INNER JOIN user AS u ON p.id = $1 AND u.id = p.dutyPerson AND p.status != 1"
+        PROJECT_SEARCH: "SELECT p.id, p.name, p.number, p.prostatus, p.dutyPerson, p.summary, u.realname AS dutyPersonName FROM project AS p LEFT JOIN user AS u ON u.id = p.dutyPerson WHERE p.status != 1 AND p.area = $1 LIMIT $2, $3",
+        PUT_COUNT: "SELECT pid, IFNULL(SUM(workload),0) AS count FROM task WHERE status != 1 AND startDate >= $1 AND endDate <= $2 GROUP BY pid",
+        TASK_WEEK_EXCEL: "SELECT t.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND t.startDate >= $1 AND t.endDate <= $2 ORDER BY t.period ASC",
+        TASK_LAST_WEEK: "SELECT t.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND t.pid = $1 AND t.startDate >= $2 AND t.endDate <= $3 ORDER BY t.period ASC",
+        TASK_THIS_WEEK: "SELECT t.id, t.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND t.pid = $1 AND t.startDate >= $2 ORDER BY t.period ASC",
+        EXCEL_PROJECT: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p LEFT JOIN user AS u ON p.dutyPerson = u.id",
+        PROJECT_DETAIL: "SELECT p.*, u.realname AS dutyPersonName FROM project AS p LEFT JOIN user AS u ON u.id = p.dutyPerson WHERE p.status != 1 AND p.id = $1"
     },
     SELECT: {
         user_select: ["username", "realname", "email", "phone", "userType", "orgCode", "position", "usualPlace", "lastLogin", "visitTimes", "status"],
         pro_select: ["name", "area", "prods", "summary", "dutyPerson", "createPerson", "number", "prostatus", "dutyPersonName"]
     },
     FILE: {
-        exportok: "导出成功！",
-        uploadok: "上传成功！"
+        exportok: {code: 200, msg: "导出成功！"},
+        uploadok: {code: 200, msg: "上传成功！"}
     }
 };

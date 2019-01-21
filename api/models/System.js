@@ -15,6 +15,6 @@ module.exports = {
     attributes: {
         key: {type: 'string', required: true},
         value: {type: 'string', required: true},
-        name: {type: 'string'}
+        name: {type: 'string', defaultsTo: ''}
     }
 };

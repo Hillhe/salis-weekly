@@ -8,11 +8,11 @@
 /**
  * username: 用户名
  * realname: 真实姓名
- * password: 密码
+ * password: 密码, 默认MD5(123456)
  * email: 邮箱
  * phone: 电话
  * avatar: 头像
- * userType: 用户类型,0/1
+ * userType: 用户类型,0/1/2
  * orgCode: 所属组织
  * position: 职位
  * usualPlace: 常驻地
@@ -23,18 +23,18 @@
 module.exports = {
     tableName: "user",
     attributes: {
-        username: {type: 'string'},
-        realname: {type: 'string'},
-        password: {type: 'string'},
-        email: {type: 'string'},
-        phone: {type: 'string'},
-        avatar: {type: 'string'},
-        userType: {type: 'string'},
-        orgCode: {type: 'string'},
-        position: {type: 'string'},
-        usualPlace: {type: 'string'},
-        lastLogin:{type: 'string'},
-        visitTimes: {type: 'string'},
+        username: {type: 'string', required: true},
+        realname: {type: 'string', required: true},
+        password: {type: 'string', defaultsTo: 'e10adc3949ba59abbe56e057f20f883e'},
+        email: {type: 'string', defaultsTo: ''},
+        phone: {type: 'string', defaultsTo: ''},
+        avatar: {type: 'string', defaultsTo: ''},
+        userType: {type: 'string', defaultsTo: ''},
+        orgCode: {type: 'string', defaultsTo: ''},
+        position: {type: 'string', defaultsTo: ''},
+        usualPlace: {type: 'string', defaultsTo: ''},
+        lastLogin:{type: 'string', defaultsTo: ''},
+        visitTimes: {type: 'string', defaultsTo: '0'},
         status: {type: 'string', defaultsTo: '0'}
     }
 };

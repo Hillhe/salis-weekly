@@ -36,10 +36,6 @@ module.exports.policies = {
         deleteProject: 'is-super-admin',
         updateProdById: 'is-super-admin',
     },
-    FileController: {
-        exportWeeklyExcel: 'is-super-admin',
-        upload: 'is-super-admin',
-    },
     TaskController: {
         create: 'is-super-admin',
         importLastWeekTask: 'is-super-admin',

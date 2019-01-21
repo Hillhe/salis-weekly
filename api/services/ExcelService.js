@@ -45,6 +45,8 @@ module.exports = {
                             t.index = i+1;
                             t.period = getValue(dict.TASK_PERIOD, t.period);
                             t.taskType = getValue(dict.TASK_TYPE, t.taskType);
+                            t.sonType = getValue(dict.TASK_TYPE, t.sonType);
+                            t.deliveryType = getValue(dict.DELIVERY_TYPE, t.deliveryType);
                             t.prods = getValue(dict.PRODUCTS, t.prods);
                             t.startDate = moment(parseInt(t.startDate)).format('YYYY/MM/DD');
                             t.endDate = moment(parseInt(t.endDate)).format('YYYY/MM/DD');
@@ -73,5 +75,57 @@ module.exports = {
         } catch (error) {
             throw error;
         }
+    },
+    async readWeekExcel(cb) {
+        let workbook = new Excel.Workbook();
+        let data = [];
+        let rowData = {
+            "pid": "5",
+            "period": "",
+            "areaId": "1",
+            "target": "",
+            "dec": "",
+            "subProject": "",
+            "taskType": "",
+            "sonType": "",
+            "deliveryType": "",
+            "prod": "",
+            "version": "1.0.15",
+            "proDutyPerson": "",
+            "taskDutyPerson": "",
+            "workload": "",
+            "startDate": "",
+            "endDate": "",
+            "progress": "",
+            "taskStatus": "0",
+            "status": "0",
+            "remark": ""
+        }
+        workbook.xlsx.readFile('test.xlsx').then(function(){
+            let worksheet = workbook.getWorksheet(1);
+            let rows = worksheet.getRows(1);
+            row.eachCell(function(cell, colNumber){
+                let value = cell.value;
+                if(typeof value == "object") value = value.text;
+                data.push(value);   
+            });
+            rowData.period = data[0];
+            rowData.target = data[1];
+            rowData.dec = data[2];
+            rowData.subProject = data[3];
+            rowData.taskType = data[4];
+            rowData.sonType = data[5];
+            rowData.deliveryType = data[6];
+            rowData.prods = data[7];
+            rowData.version = data[8];
+            rowData.proDutyPerson = data[9];
+            rowData.taskDutyPerson = data[9];
+            rowData.workload = data[10];
+            rowData.workload = data[11];
+            rowData.startDate = moment(data[12]).format('x');
+            rowData.endDate = moment(data[13]).format('x');
+            rowData.progress = data[14];
+            cb(rowData);
+        });
     }
 }

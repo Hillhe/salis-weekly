@@ -1,6 +1,7 @@
 let PROJECT_ERR = sails.config.custom.PROJECT;
 let SQLS = sails.config.custom.SQLS;
 let COMMON = sails.config.custom.COMMON;
+let moment = require("moment");
 module.exports = {
     //获取项目
     async getProdList(req, res) {
@@ -10,21 +11,18 @@ module.exports = {
                 pageIndex = COMMON.pageIndex,
                 pageSize = COMMON.pageSize
             } = req.query;
+
             let total = await Project.count({where: {status: { '!=' : COMMON.deleted }, area: areaId}});
             let prods = await sails.sendNativeQuery(SQLS.PROJECT_SEARCH, [areaId, (parseInt(pageIndex - 1)) * parseInt(pageSize), pageSize]);
-            let putCounts = await sails.sendNativeQuery(SQLS.PUT_COUNT);
+            let startDate = moment().startOf('isoWeek').format('x'); //本周一
+            let endDate = moment().endOf('isoWeek').format('x'); //本周日
+            let putCounts = await sails.sendNativeQuery(SQLS.PUT_COUNT, [startDate, endDate]);
             prods.rows.map(item => {
                 let oneCount = putCounts.rows.filter(count => item.id == count.pid)[0];
                 item.putCount = oneCount ? oneCount.count : 0;
             })
             prods.rows.sort((a, b) => {return b.putCount - a.putCount;});
-            let result = {
-                total: total,
-                pageIndex: pageIndex,
-                pageSize: pageSize,
-                list: prods.rows
-            };
-            res.wrRes(PROJECT_ERR.getOk, result);
+            res.wrPageRes(PROJECT_ERR.getOk, total, pageIndex, pageSize, prods.rows);
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -92,7 +90,7 @@ module.exports = {
     //获取责任人项目
     async getProdByPersonId(req, res) {
         try {
-            let prodPersonId = parseInt(req.param('dutyId'));PROJECT_DETAIL
+            let prodPersonId = parseInt(req.param('dutyId'));
             var prods = await Project.find({
                 where: {
                     dutyPerson: prodPersonId,

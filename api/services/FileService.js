@@ -1,7 +1,7 @@
 let Excel = require('exceljs');
 let moment = require("moment");
 let EXCELCONF = sails.config.custom.EXCEL;
-let WorkSheet = require("./Excel");
+let WorkSheet = require("./WorkSheet");
 function getValue(dict, keys) {
     try {
         if(!keys || !dict) return "";
@@ -24,6 +24,7 @@ module.exports = {
             //创建工作簿并设置头部样式
             let sheet = new WorkSheet(workbook, EXCELCONF.sheetOpt);
             sheet.setRowStyle(1, EXCELCONF.headerOpt);
+            /****************************set Data and Style**********************************/
             Object.values(areas).map(item => {
                 sheet.startRow = sheet.curRow;
                 item.projects.map((p, index) => {
@@ -44,6 +45,8 @@ module.exports = {
                             t.index = i+1;
                             t.period = getValue(dict.TASK_PERIOD, t.period);
                             t.taskType = getValue(dict.TASK_TYPE, t.taskType);
+                            t.sonType = getValue(dict.TASK_TYPE, t.sonType);
+                            t.deliveryType = getValue(dict.DELIVERY_TYPE, t.deliveryType);
                             t.prods = getValue(dict.PRODUCTS, t.prods);
                             t.startDate = moment(parseInt(t.startDate)).format('YYYY/MM/DD');
                             t.endDate = moment(parseInt(t.endDate)).format('YYYY/MM/DD');
@@ -61,7 +64,7 @@ module.exports = {
                 };
                 
             });
-
+            /****************************set Data and Style**********************************/
             //生成表格
             let filename = moment().format(EXCELCONF.wrExcelName)+".xlsx";
             workbook.xlsx.writeFile(EXCELCONF.wrOutPath+filename).then(res => {

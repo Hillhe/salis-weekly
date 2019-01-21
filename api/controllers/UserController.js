@@ -98,36 +98,33 @@ module.exports = {
     async getUserList(req, res) {
         try {
             let { pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize, name = "", org = ""} = req.query;
+            if(org == 0) org = "";
             let total = await User.count({
                 where: {
+                    status: 0,
+                    userType: {'!=': COMMON.adminType},
                     or: [
                         { username: {contains: name }},
                         { realname: {contains: name }}
                     ],
-                    orgCode: {contains: org },
-                    status: { '!=' : COMMON.deleted }
+                    orgCode: {contains: org }
                 }
             });
             let users = await User.find({
                 where: {
+                    status: 0,
+                    userType: {'!=': COMMON.adminType},
                     or: [
                         { username: {contains: name }},
                         { realname: {contains: name }}
                     ],
-                    orgCode: {contains: org },
-                    status: { '!=' : COMMON.deleted }
+                    orgCode: {contains: org }
                 },
                 skip: (parseInt(pageIndex) -1) * parseInt(pageSize),
                 limit: parseInt(pageSize),
                 select: SELECT.user_select
             });
-            let result = {
-                total: total,
-                pageIndex: parseInt(pageIndex),
-                pageSize: parseInt(pageSize),
-                list: users
-            }
-            res.wrRes(USER_ERR.getok, result);
+            res.wrPageRes(USER_ERR.getok, total, pageIndex, pageSize, users);
         } catch (error) {
             res.wrErrRes(error);
         }

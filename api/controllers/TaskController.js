@@ -11,10 +11,10 @@ module.exports = {
             deleteIdList = JSON.parse(deleteIdList);
             let addList = createList.filter(item => !item.id);
             let updateList = createList.filter(item => !!item.id);
-            await Task.createEach(addList);
-            await Task.update({where:{id:{'in':deleteIdList}}}).set({status: COMMON.deleted});
-            await commonService.batchUpdateById(Task, updateList);
-            res.wrRes(TASK.updateok);
+            let addedList = await Task.createEach(addList).fetch();
+            let deletedList = await Task.update({where:{id:{'in':deleteIdList}}}).set({status: COMMON.deleted}).fetch();
+            let updatedList = await commonService.batchUpdateById(Task, updateList);
+            res.wrRes(TASK.updateok, {updatedList: addedList.concat(updatedList), deletedList: deletedList});
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -24,46 +24,31 @@ module.exports = {
         try {
             let {startDate = "", endDate = "", period = 0, taskType = 0, prods = '', pid = "",
                 taskDutyPerson = 0,taskStatus = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize} = req.query;
-            let params = {taskType: taskType, taskDutyPerson: taskDutyPerson, taskStatus: taskStatus};
-            if (!startDate && !endDate && period == 0) {
-                startDate = moment().startOf('isoWeek').format('x');
-                endDate = moment().endOf('isoWeek').format('x');
+            let SQL = `SELECT FIELDS FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND pid = ${pid}`;
+            if (startDate) {
+                SQL += ` AND t.startDate >= ${startDate}`;
             }
-            Object.keys(params).map(key => {
-                if (params[key] == 0 || params[key] == '') {
-                    delete params[key]
-                }
-            });
-            if (prods != 0 && prods != "") {
-                params.prods = {contains: prods}
+            if(endDate) {
+                SQL += ` AND t.endDate <= ${endDate}`;
+            } 
+            if(taskDutyPerson != 0 && taskDutyPerson != '') {
+                SQL += ` AND t.taskDutyPerson = ${taskDutyPerson}`;
             }
-            let total = await Task.count({
-                where: Object.assign({}, {
-                    pid: pid,
-                    startDate: {'>=': startDate},
-                    endDate: {'<=': endDate},
-                    status: { '!=' : COMMON.deleted },
-                }, params)
-            });
-            let tasks = await Task.find({
-                skip: (parseInt(pageIndex) - 1) * parseInt(pageSize),
-                limit: parseInt(pageSize),
-                where: Object.assign({}, {
-                    pid: pid,
-                    startDate: {'>=': startDate},
-                    endDate: {'<=': endDate},
-                    status: { '!=' : COMMON.deleted }
-                }, params)
-            }).sort("period ASC");
-            let users = await User.find();
-            tasks.map(t => {t.dutyPersonName = (users.filter(u => u.id == t.taskDutyPerson)[0].realname)});
-            let result = {
-                total: total,
-                pageIndex: pageIndex,
-                pageSize: pageSize,
-                list: tasks
-            };
-            res.wrRes(TASK.ok, result);
+            if(taskStatus != 0 && taskStatus != '') {
+                SQL += ` AND t.taskStatus = ${taskStatus}`;
+            }
+            if(taskType != 0 && taskType != '') {
+                SQL += ` AND t.taskType = ${taskType}`;
+            }
+            if (prods != 0 && prods != '') {
+                SQL += ` AND t.prods LIKE '%${prods}%'`;
+            }
+            let totalSql = SQL.replace('FIELDS', 'IFNULL(COUNT(*),0) AS count');
+            let total = await sails.sendNativeQuery(totalSql);
+            let taskSql = SQL.replace('FIELDS', 't.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName');
+            taskSql += ` ORDER BY t.period ASC LIMIT ${(parseInt(pageIndex-1)*pageSize)}, ${pageSize}`;
+            let tasks = await sails.sendNativeQuery(taskSql);
+            res.wrPageRes(TASK.ok, total, pageIndex, pageSize, tasks.rows);
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -71,9 +56,21 @@ module.exports = {
     //导入上周数据
     async importLastWeekTask(req, res) {
         try {
+            let {pid = ""} = req.query
             let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
             let endDate =  moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
-            let tasks = await sails.sendNativeQuery(SQLS.TASK_LIST, [startDate, endDate]);
+            let tasks = await sails.sendNativeQuery(SQLS.TASK_LAST_WEEK, [pid, startDate, endDate]);
+            res.wrRes(TASK.ok, tasks.rows);
+        } catch (error) {
+            res.wrErrRes(error);
+        }
+    },
+    //获取编辑模式下的数据
+    async getTaskWhenEidt(req, res) {
+        try {
+            let {pid = ""} = req.query;
+            let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
+            let tasks = await sails.sendNativeQuery(SQLS.TASK_THIS_WEEK, [pid, startDate]);
             res.wrRes(TASK.ok, tasks.rows);
         } catch (error) {
             res.wrErrRes(error);
@@ -82,11 +79,11 @@ module.exports = {
     //获取周报数据
     async getExcelData() {
         try {
-            let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
-            let endDate =  moment().endOf('isoWeek').format('x'); // 上周日 23时59分59秒
+            let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
+            let endDate =  moment().endOf('isoWeek').add(7, 'days').format('x'); // 下周日 23时59分59秒
             let areas = await Area.find();
             let projects = await sails.sendNativeQuery(SQLS.EXCEL_PROJECT);
-            let tasks = await sails.sendNativeQuery(SQLS.TASK_LIST, [startDate, endDate]);
+            let tasks = await sails.sendNativeQuery(SQLS.TASK_WEEK_EXCEL, [startDate, endDate]);
             projects.rows.map(p => {p.tasks = tasks.rows.filter(t => t.pid == p.id)});
             areas.map(a => {a.projects = projects.rows.filter(p => p.area == a.id);});
             let dict = await System.findOne({where: {key: 'dict'}, select: ['value']});

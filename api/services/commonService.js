@@ -5,7 +5,7 @@ module.exports = {
         let tasks = [];
         for (let i = 0; i < data.length; i++) {
             const ele = data[i];
-            let result = await Model.updateOne({id: ele.id}).set(ele);
+            let result = await Model.updateOne({id: ele.id}).set(ele).fetch();
             tasks.push(result);
         }
         return await tasks;

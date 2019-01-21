@@ -2,7 +2,7 @@
     "uid": "weekly",
     "append": true,
     "script": "app.js",
-    "sourceDir": "/home/weekly-reports/www",
+    "sourceDir": "/home/weekly-reports/www/",
     "logFile": "/home/weekly-reports/www/logs/logs.log",
     "outFile": "/home/weekly-reports/www/logs/out.log",
     "errFile": "/home/weekly-reports/www/logs/error.log"
