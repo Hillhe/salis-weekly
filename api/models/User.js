@@ -23,18 +23,18 @@
 module.exports = {
     tableName: "user",
     attributes: {
-        username: {type: 'string', required: true},
-        realname: {type: 'string', required: true},
-        password: {type: 'string', defaultsTo: 'e10adc3949ba59abbe56e057f20f883e'},
-        email: {type: 'string', defaultsTo: ''},
-        phone: {type: 'string', defaultsTo: ''},
-        avatar: {type: 'string', defaultsTo: ''},
-        userType: {type: 'string', defaultsTo: ''},
-        orgCode: {type: 'string', defaultsTo: ''},
-        position: {type: 'string', defaultsTo: ''},
-        usualPlace: {type: 'string', defaultsTo: ''},
-        lastLogin:{type: 'string', defaultsTo: ''},
-        visitTimes: {type: 'string', defaultsTo: '0'},
-        status: {type: 'string', defaultsTo: '0'}
+        username: { type: 'string', required: true },
+        realname: { type: 'string', required: true },
+        password: { type: 'string', defaultsTo: 'e10adc3949ba59abbe56e057f20f883e' },
+        email: { type: 'string', defaultsTo: '' },
+        phone: { type: 'string', defaultsTo: '' },
+        avatar: { type: 'string', defaultsTo: '' },
+        userType: { type: 'string', defaultsTo: '' },
+        orgCode: { type: 'string', defaultsTo: '' },
+        position: { type: 'string', defaultsTo: '' },
+        usualPlace: { type: 'string', defaultsTo: '' },
+        lastLogin: { type: 'string', defaultsTo: '' },
+        visitTimes: { type: 'string', defaultsTo: '0' },
+        status: { type: 'string', defaultsTo: '0' }
     }
 };

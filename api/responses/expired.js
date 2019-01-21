@@ -22,12 +22,12 @@
  */
 module.exports = function expired() {
 
-  var req = this.req;
-  var res = this.res;
+    var req = this.req;
+    var res = this.res;
 
-  sails.log.verbose('Ran custom response: res.expired()');
+    sails.log.verbose('Ran custom response: res.expired()');
 
-  if (req.wantsJSON) {
-    return res.json({code: 498, data: [], msg: "Login expired"});
-  }
+    if (req.wantsJSON) {
+        return res.json({ code: 498, data: [], msg: "Login expired" });
+    }
 };

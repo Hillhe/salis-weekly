@@ -1,79 +1,24 @@
-let Excel = require('exceljs');
 let moment = require("moment");
-let EXCELCONF = sails.config.custom.EXCEL;
-let WorkSheet = require("./WorkSheet");
-function getValue(dict, keys) {
-    try {
-        if(!keys || !dict) return "";
-        keys = keys.split(",");
-        let matchs = Object.values(dict).filter(d => keys.includes(d.key+""));
-        let values = matchs.map(m => m.value);
-        return values.join("、");
-    } catch (error) {
-        throw error
-    }
-}
 module.exports = {
-    async makeWeekExcel(data, cb) {
+    //上传文件-测试
+    async upload(req, res) {
         try {
-            //获取任务数据, 字典值
-            let {areas, dict} = data;
-            if(!areas || !dict) {cb("");return;};
-            //创建表格
-            let workbook = new Excel.Workbook();
-            //创建工作簿并设置头部样式
-            let sheet = new WorkSheet(workbook, EXCELCONF.sheetOpt);
-            sheet.setRowStyle(1, EXCELCONF.headerOpt);
-            /****************************set Data and Style**********************************/
-            Object.values(areas).map(item => {
-                sheet.startRow = sheet.curRow;
-                item.projects.map((p, index) => {
-                    p.areaname = item.areaname;
-                    p.taskDutyPerson = p.dutyPerson;
-                    p.taskStatus = getValue(dict.SUPPORT_TYPE, p.prostatus);
-                    p.index = index+1;
-                    p.prods = getValue(dict.PRODUCTS, p.prods);
-                    //添加项目
-                    sheet.addOneRow(p, EXCELCONF.projectOpt);
-                    let tasks = p.tasks;
-                    if (tasks.length == 0) {
-                        //添加空行
-                        sheet.addOneRow(EXCELCONF.nullRow.data, EXCELCONF.nullRow.option);
-                        sheet.mergeCell(`B${sheet.curRow}`, `${String.fromCharCode(65+EXCELCONF.sheetOpt.columns.length-1)}${sheet.curRow}`);
-                    } else {
-                        tasks.map((t, i) => {
-                            t.index = i+1;
-                            t.period = getValue(dict.TASK_PERIOD, t.period);
-                            t.taskType = getValue(dict.TASK_TYPE, t.taskType);
-                            t.sonType = getValue(dict.TASK_TYPE, t.sonType);
-                            t.deliveryType = getValue(dict.DELIVERY_TYPE, t.deliveryType);
-                            t.prods = getValue(dict.PRODUCTS, t.prods);
-                            t.startDate = moment(parseInt(t.startDate)).format('YYYY/MM/DD');
-                            t.endDate = moment(parseInt(t.endDate)).format('YYYY/MM/DD');
-                            t.progress = getValue(dict.TASK_PROGRESS, t.progress);
-                            t.taskStatus = getValue(dict.PRO_STATUS, t.taskStatus);
-                            //添加任务
-                            sheet.addOneRow(t, EXCELCONF.taskOpt);
-                        });
-                    }
-                });
-                //设置项目集样式
-                if((sheet.startRow +1) < sheet.curRow){
-                    sheet.mergeCell("A"+ (sheet.startRow +1), "A"+sheet.curRow);
-                    sheet.setOneCellStyle("A" + (sheet.startRow+1), EXCELCONF.proSet);
-                };
-                
-            });
-            /****************************set Data and Style**********************************/
-            //生成表格
-            let filename = moment().format(EXCELCONF.wrExcelName)+".xlsx";
-            workbook.xlsx.writeFile(EXCELCONF.wrOutPath+filename).then(res => {
-                cb(EXCELCONF.wrPrefix + filename);
-            }, function (error) {
-                throw error
+            req.file('file').upload({
+                maxBytes: FILECONF.maxBytes,
+                dirname: FILECONF.imgOutPath,
+                saveAs: function (__newFileStream, next) {
+                    return next(undefined, __newFileStream.filename);
+                }
+            }, function whenDone(err, uploadedFiles) {
+                if (err) {
+                    throw err;
+                } else {
+                    let imgUrl = "/imgs/" + uploadedFiles[0].filename;
+                    res.wrRes(FILE_ERR.uploadok, { imgurl: imgUrl });
+                }
             });
         } catch (error) {
-            throw error;
+            res.wrErrRes(error);
         }
     }
 }

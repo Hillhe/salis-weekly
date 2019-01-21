@@ -11,7 +11,7 @@ module.exports = {
                 rawResult.map(item => {
                     result[item.key] = item.value;
                 });
-            } 
+            }
             res.wrRes(SYS.ok, result);
         } catch (error) {
             res.wrErrRes(error);
@@ -20,12 +20,12 @@ module.exports = {
     //获取组织树
     async getOrgTree(req, res) {
         try {
-            let { type = 'org'} = req.query;
-            let orgs = await Org.find(), users = []; 
-            if(type == "user") {
+            let { type = 'org' } = req.query;
+            let orgs = await Org.find(), users = [];
+            if (type == "user") {
                 users = await User.find({
                     where: {
-                        status: { '!=' : COMMON.deleted }
+                        status: { '!=': COMMON.deleted }
                     },
                     select: SELECT.user_select
                 })
@@ -33,7 +33,7 @@ module.exports = {
             let treeRoot = orgs.filter(item => item.parentId == COMMON.rootParentId);
             treeRoot.map(root => {
                 root.children = orgs.filter(item => item.parentId == root.orgCode);
-                root.children.map(child => {child.children = users.filter(user => user.orgCode == child.orgCode);});
+                root.children.map(child => { child.children = users.filter(user => user.orgCode == child.orgCode); });
             });
             res.wrRes(SYS.ok, treeRoot);
         } catch (error) {

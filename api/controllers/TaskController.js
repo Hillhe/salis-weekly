@@ -4,17 +4,17 @@ let SQLS = sails.config.custom.SQLS;
 let moment = require("moment");
 module.exports = {
     //添加， 更新， 删除任务
-    async createTask(req, res){
+    async createTask(req, res) {
         try {
-            let {createList = '[]', deleteIdList = '[]'} = req.body;
+            let { createList = '[]', deleteIdList = '[]' } = req.body;
             createList = JSON.parse(createList);
             deleteIdList = JSON.parse(deleteIdList);
             let addList = createList.filter(item => !item.id);
             let updateList = createList.filter(item => !!item.id);
             let addedList = await Task.createEach(addList).fetch();
-            let deletedList = await Task.update({where:{id:{'in':deleteIdList}}}).set({status: COMMON.deleted}).fetch();
+            let deletedList = await Task.update({ where: { id: { 'in': deleteIdList } } }).set({ status: COMMON.deleted }).fetch();
             let updatedList = await commonService.batchUpdateById(Task, updateList);
-            res.wrRes(TASK.updateok, {updatedList: addedList.concat(updatedList), deletedList: deletedList});
+            res.wrRes(TASK.updateok, { updatedList: addedList.concat(updatedList), deletedList: deletedList });
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -22,22 +22,22 @@ module.exports = {
     //查询任务
     async getTaskList(req, res) {
         try {
-            let {startDate = "", endDate = "", period = 0, taskType = 0, prods = '', pid = "",
-                taskDutyPerson = 0,taskStatus = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize} = req.query;
+            let { startDate = "", endDate = "", period = 0, taskType = 0, prods = '', pid = "",
+                taskDutyPerson = 0, taskStatus = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize } = req.query;
             let SQL = `SELECT FIELDS FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND pid = ${pid}`;
             if (startDate) {
                 SQL += ` AND t.startDate >= ${startDate}`;
             }
-            if(endDate) {
+            if (endDate) {
                 SQL += ` AND t.endDate <= ${endDate}`;
-            } 
-            if(taskDutyPerson != 0 && taskDutyPerson != '') {
+            }
+            if (taskDutyPerson != 0 && taskDutyPerson != '') {
                 SQL += ` AND t.taskDutyPerson = ${taskDutyPerson}`;
             }
-            if(taskStatus != 0 && taskStatus != '') {
+            if (taskStatus != 0 && taskStatus != '') {
                 SQL += ` AND t.taskStatus = ${taskStatus}`;
             }
-            if(taskType != 0 && taskType != '') {
+            if (taskType != 0 && taskType != '') {
                 SQL += ` AND t.taskType = ${taskType}`;
             }
             if (prods != 0 && prods != '') {
@@ -46,9 +46,9 @@ module.exports = {
             let totalSql = SQL.replace('FIELDS', 'IFNULL(COUNT(*),0) AS count');
             let total = await sails.sendNativeQuery(totalSql);
             let taskSql = SQL.replace('FIELDS', 't.pid, t.period, t.target, t.dec, t.subProject, t.taskType, t.sonType, t.deliveryType, t.prods, t.version, t.proDutyPerson, t.taskDutyPerson, t.workload, t.startDate, t.endDate, t.progress, t.taskStatus, t.remark, u.realname AS dutyPersonName');
-            taskSql += ` ORDER BY t.period ASC LIMIT ${(parseInt(pageIndex-1)*pageSize)}, ${pageSize}`;
+            taskSql += ` ORDER BY t.period ASC LIMIT ${(parseInt(pageIndex - 1) * pageSize)}, ${pageSize}`;
             let tasks = await sails.sendNativeQuery(taskSql);
-            res.wrPageRes(TASK.ok, total, pageIndex, pageSize, tasks.rows);
+            res.wrPageRes(TASK.ok, total.rows[0].count, pageIndex, pageSize, tasks.rows);
         } catch (error) {
             res.wrErrRes(error);
         }
@@ -56,9 +56,9 @@ module.exports = {
     //导入上周数据
     async importLastWeekTask(req, res) {
         try {
-            let {pid = ""} = req.query
+            let { pid = "" } = req.query
             let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
-            let endDate =  moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
+            let endDate = moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
             let tasks = await sails.sendNativeQuery(SQLS.TASK_LAST_WEEK, [pid, startDate, endDate]);
             res.wrRes(TASK.ok, tasks.rows);
         } catch (error) {
@@ -68,7 +68,7 @@ module.exports = {
     //获取编辑模式下的数据
     async getTaskWhenEidt(req, res) {
         try {
-            let {pid = ""} = req.query;
+            let { pid = "" } = req.query;
             let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
             let tasks = await sails.sendNativeQuery(SQLS.TASK_THIS_WEEK, [pid, startDate]);
             res.wrRes(TASK.ok, tasks.rows);
@@ -80,14 +80,14 @@ module.exports = {
     async getExcelData() {
         try {
             let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
-            let endDate =  moment().endOf('isoWeek').add(7, 'days').format('x'); // 下周日 23时59分59秒
+            let endDate = moment().endOf('isoWeek').add(7, 'days').format('x'); // 下周日 23时59分59秒
             let areas = await Area.find();
             let projects = await sails.sendNativeQuery(SQLS.EXCEL_PROJECT);
             let tasks = await sails.sendNativeQuery(SQLS.TASK_WEEK_EXCEL, [startDate, endDate]);
-            projects.rows.map(p => {p.tasks = tasks.rows.filter(t => t.pid == p.id)});
-            areas.map(a => {a.projects = projects.rows.filter(p => p.area == a.id);});
-            let dict = await System.findOne({where: {key: 'dict'}, select: ['value']});
-            return await {areas: areas, dict: JSON.parse(dict.value)};
+            projects.rows.map(p => { p.tasks = tasks.rows.filter(t => t.pid == p.id) });
+            areas.map(a => { a.projects = projects.rows.filter(p => p.area == a.id); });
+            let dict = await System.findOne({ where: { key: 'dict' }, select: ['value'] });
+            return await { areas: areas, dict: JSON.parse(dict.value) };
         } catch (error) {
             throw error;
         }

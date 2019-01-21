@@ -2,8 +2,8 @@
 let merge = require('merge');
 let border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
 module.exports = function WooKSheet(workBook, options = {}) {
-    this.startRow = options.startRow;
-    this.curRow = options.curRow;
+    this.startRow = options.startRow || 0;
+    this.curRow = options.curRow || 0;
     this.workSheet = workBook.addWorksheet(options.sheetName, options.properties);
     this.workSheet.columns = options.columns;
 
@@ -28,6 +28,12 @@ module.exports = function WooKSheet(workBook, options = {}) {
             cell.border = merge(border, option.border || {});
         });
     };
+    this.setOneCellStyle = function (cellNum, option) {
+        let cell = this.workSheet.getCell(cellNum);
+        cell.fill = option.fill || {};
+        cell.border = merge(border, option.border || {});
+        cell.alignment = option.alignment || {};
+    };
     this.addOneRow = function (data, option) {
         this.curRow++;
         let row = this.workSheet.addRow(data);
@@ -45,10 +51,5 @@ module.exports = function WooKSheet(workBook, options = {}) {
         if (start == end) return;
         this.workSheet.mergeCells(start, end);
     };
-    this.setOneCellStyle = function (cellNum, option) {
-        let cell = this.workSheet.getCell(cellNum);
-        cell.fill = option.fill || {};
-        cell.border = merge(border, option.border || {});
-        cell.alignment = option.alignment || {};
-    }
+
 }

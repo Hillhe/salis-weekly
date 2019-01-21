@@ -12,7 +12,7 @@ module.exports = {
                 pageSize = COMMON.pageSize
             } = req.query;
 
-            let total = await Project.count({where: {status: { '!=' : COMMON.deleted }, area: areaId}});
+            let total = await Project.count({ where: { status: { '!=': COMMON.deleted }, area: areaId } });
             let prods = await sails.sendNativeQuery(SQLS.PROJECT_SEARCH, [areaId, (parseInt(pageIndex - 1)) * parseInt(pageSize), pageSize]);
             let startDate = moment().startOf('isoWeek').format('x'); //本周一
             let endDate = moment().endOf('isoWeek').format('x'); //本周日
@@ -21,7 +21,7 @@ module.exports = {
                 let oneCount = putCounts.rows.filter(count => item.id == count.pid)[0];
                 item.putCount = oneCount ? oneCount.count : 0;
             })
-            prods.rows.sort((a, b) => {return b.putCount - a.putCount;});
+            prods.rows.sort((a, b) => { return b.putCount - a.putCount; });
             res.wrPageRes(PROJECT_ERR.getOk, total, pageIndex, pageSize, prods.rows);
         } catch (error) {
             res.wrErrRes(error);
@@ -33,7 +33,7 @@ module.exports = {
             let project = req.body;
             let person = req.session.curuser;
             project.createPerson = person ? person.id : "";
-            Project.findOrCreate({name: project.name}, project).exec(async(err, project, wasCreated)=> {
+            Project.findOrCreate({ name: project.name }, project).exec(async (err, project, wasCreated) => {
                 if (err) { res.wrErrRes(err); }
                 if (!wasCreated && project) {
                     res.wrRes(PROJECT_ERR.has, project);
@@ -49,7 +49,7 @@ module.exports = {
     async deleteProject(req, res) {
         try {
             let prodId = req.param('id');
-            let prod = await Project.updateOne({id: prodId}).set({status: COMMON.deleted});
+            let prod = await Project.updateOne({ id: prodId }).set({ status: COMMON.deleted });
             if (prod) {
                 res.wrRes(PROJECT_ERR.del);
             } else {
@@ -63,7 +63,7 @@ module.exports = {
     async updateProdById(req, res) {
         try {
             let project = req.body;
-            var updatedProd = await Project.updateOne({id: project.id}).set(project);
+            var updatedProd = await Project.updateOne({ id: project.id }).set(project);
             if (updatedProd) {
                 res.wrRes(PROJECT_ERR.update, updatedProd);
             } else {
@@ -94,7 +94,7 @@ module.exports = {
             var prods = await Project.find({
                 where: {
                     dutyPerson: prodPersonId,
-                    status: { '!=' : COMMON.deleted }
+                    status: { '!=': COMMON.deleted }
                 }
             });
             res.wrRes(PROJECT_ERR.getOk, prods);

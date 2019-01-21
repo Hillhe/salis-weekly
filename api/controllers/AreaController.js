@@ -4,7 +4,7 @@ module.exports = {
     //获取所有区域
     async getAllArea(req, res) {
         try {
-            var rawResult = await Area.find({status: { '!=' : COMMON.deleted }});
+            var rawResult = await await Area.find({ status: { '!=': COMMON.deleted } }).sort('order ASC');
             res.wrRes("ok", rawResult);
         } catch (error) {
             res.wrErrRes(error);
@@ -14,9 +14,10 @@ module.exports = {
     async addOneArea(req, res) {
         try {
             let { name } = req.body;
-            Area.findOrCreate({ areaname: name }, {areaname: name}).exec(async (err, area, wasCreated) => {
+            Area.findOrCreate({ areaname: name }, { areaname: name }).exec(async (err, area, wasCreated) => {
                 if (err) { res.wrErrRes(err); }
-                let areas = await Area.find({status: { '!=' : COMMON.deleted }});
+                await Area.updateOne({ id: area.id }).set({ order: area.id });
+                let areas = await Area.find({ status: { '!=': COMMON.deleted } }).sort('order ASC');
                 if (!wasCreated && area) {
                     res.wrRes(AREA_ERR.has, areas);
                 } else {
@@ -27,8 +28,8 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
-    //更新区域
-    async updataOneArea(req, res) {
+    //更新一个区域
+    async updateOneArea(req, res) {
         try {
             let { id, name } = req.body;
             var updateArea = await Area.updateOne({ id: id }).set({ areaname: name });
@@ -41,11 +42,23 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
+    //更新多个区域
+    async updateAreas(req, res) {
+        try {
+            let { areas = '[]' } = req.body;
+            areas = JSON.parse(areas);
+            sails.log.info(areas);
+            let areaList = await commonService.batchUpdateById(Area, areas);
+            res.wrRes(AREA_ERR.success, areaList);
+        } catch (error) {
+            res.wrErrRes(error);
+        }
+    },
     //删除区域
     async delOneArea(req, res) {
         try {
             let areaId = req.param('id');
-            let area = await Area.updateOne({id: areaId}).set({status: COMMON.deleted});
+            let area = await Area.updateOne({ id: areaId }).set({ status: COMMON.deleted });
             res.wrRes(AREA_ERR.success);
         } catch (error) {
             res.wrErrRes(error);

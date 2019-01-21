@@ -21,16 +21,16 @@
 module.exports = {
     tableName: "project",
     attributes: {
-        name: {type: 'string', required: true},
-        area: {type: 'string', required: true},
-        dutyPerson: {type: 'string', required: true},
-        createPerson: {type: 'string', defaultsTo: ''},
-        prods: {type: 'string', defaultsTo: ''},
-        summary: {type: 'string', defaultsTo: ''},
-        number: {type: 'string', defaultsTo: ''},
-        prostatus: {type: 'string', defaultsTo: ''},
-        wordpath: {type: 'string', defaultsTo: ''},
-        status: {type: 'string', defaultsTo: '0'},
-        remark: {type: 'string', defaultsTo: ''},
+        name: { type: 'string', required: true },
+        area: { type: 'string', required: true },
+        dutyPerson: { type: 'string', required: true },
+        createPerson: { type: 'string', defaultsTo: '' },
+        prods: { type: 'string', defaultsTo: '' },
+        summary: { type: 'string', defaultsTo: '' },
+        number: { type: 'string', defaultsTo: '' },
+        prostatus: { type: 'string', defaultsTo: '' },
+        wordpath: { type: 'string', defaultsTo: '' },
+        status: { type: 'string', defaultsTo: '0' },
+        remark: { type: 'string', defaultsTo: '' },
     }
 };

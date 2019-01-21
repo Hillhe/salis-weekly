@@ -7,7 +7,7 @@ module.exports = function wrPageRes(message, total = 0, pageIndex = COMMON.pageI
     var req = this.req;
     var res = this.res;
     var result = {}, resultData = {};
-    
+
     // Optional message
     result.code = message.code || 200;
     result.message = message.msg || message;
@@ -16,7 +16,7 @@ module.exports = function wrPageRes(message, total = 0, pageIndex = COMMON.pageI
     resultData.pageSize = pageSize;
     resultData.list = data;
     result.data = resultData;
-    
+
     if (req.wantsJSON) {
         sails.log.info(result);
         return res.json(result);

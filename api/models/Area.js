@@ -8,11 +8,13 @@
 /**
  * areaname: 名称
  * status: 状态
+ * order: 顺序
  */
 module.exports = {
     tableName: "area",
     attributes: {
-        areaname: {type: 'string',required: true},
-        status: {type: 'string', defaultsTo: '0'}
+        areaname: { type: 'string', required: true },
+        order: { type: 'number', defaultsTo: 0 },
+        status: { type: 'string', defaultsTo: '0' }
     }
 };
