@@ -23,7 +23,7 @@ module.exports = {
     async getTaskList(req, res) {
         try {
             let { startDate = "", endDate = "", period = 0, taskType = 0, prods = '', pid = "",
-                taskDutyPerson = 0, taskStatus = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize } = req.query;
+                taskDutyPerson = 0, progress = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize } = req.query;
             let SQL = `SELECT FIELDS FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND pid = ${pid}`;
             if (startDate) {
                 SQL += ` AND t.startDate >= ${startDate}`;
@@ -31,16 +31,16 @@ module.exports = {
             if (endDate) {
                 SQL += ` AND t.endDate <= ${endDate}`;
             }
-            if (taskDutyPerson != 0 && taskDutyPerson != '') {
-                SQL += ` AND t.taskDutyPerson = ${taskDutyPerson}`;
+            if (taskDutyPerson != '' && taskDutyPerson.indexOf(0) < 0 && taskDutyPerson.split(",").length > 0) {
+                SQL += ` AND t.taskDutyPerson in(${taskDutyPerson})`;
             }
-            if (taskStatus != 0 && taskStatus != '') {
-                SQL += ` AND t.taskStatus = ${taskStatus}`;
+            if (progress != 0 && progress != '') {
+                SQL += ` AND t.progress = ${progress}`;
             }
             if (taskType != 0 && taskType != '') {
                 SQL += ` AND t.taskType = ${taskType}`;
             }
-            if (prods != 0 && prods != '') {
+            if (prods != 0 && prods != '' && prods.indexOf(0) < 0) {
                 SQL += ` AND t.prods LIKE '%${prods}%'`;
             }
             let totalSql = SQL.replace('FIELDS', 'IFNULL(COUNT(*),0) AS count');
@@ -70,7 +70,8 @@ module.exports = {
         try {
             let { pid = "" } = req.query;
             let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
-            let tasks = await sails.sendNativeQuery(SQLS.TASK_THIS_WEEK, [pid, startDate]);
+            let endDate = moment().endOf('isoWeek').add(7, 'days').format('x'); // 下周日 23时59分59秒
+            let tasks = await sails.sendNativeQuery(SQLS.TASK_THIS_WEEK, [pid, startDate, endDate]);
             res.wrRes(TASK.ok, tasks.rows);
         } catch (error) {
             res.wrErrRes(error);

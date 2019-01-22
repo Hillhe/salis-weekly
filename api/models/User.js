@@ -29,7 +29,7 @@ module.exports = {
         email: { type: 'string', defaultsTo: '' },
         phone: { type: 'string', defaultsTo: '' },
         avatar: { type: 'string', defaultsTo: '' },
-        userType: { type: 'string', defaultsTo: '' },
+        userType: { type: 'string', defaultsTo: '0' },
         orgCode: { type: 'string', defaultsTo: '' },
         position: { type: 'string', defaultsTo: '' },
         usualPlace: { type: 'string', defaultsTo: '' },
