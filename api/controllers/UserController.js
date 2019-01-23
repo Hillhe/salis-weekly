@@ -107,7 +107,7 @@ module.exports = {
                         { username: { contains: name } },
                         { realname: { contains: name } }
                     ],
-                    orgCode: { contains: org }
+                    orgCode: { contains: org+'' }
                 }
             });
             let users = await User.find({
@@ -118,7 +118,7 @@ module.exports = {
                         { username: { contains: name } },
                         { realname: { contains: name } }
                     ],
-                    orgCode: { contains: org }
+                    orgCode: { contains: org+'' }
                 },
                 skip: (parseInt(pageIndex) - 1) * parseInt(pageSize),
                 limit: parseInt(pageSize),

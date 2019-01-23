@@ -10,6 +10,7 @@
  * orgName: 机构名称
  * parentId： 父机构代码 -1表示无父机构
  * dutyPerson: 责任人
+ * status: 状态
  */
 module.exports = {
     tableName: "org",
@@ -17,6 +18,7 @@ module.exports = {
         orgCode: { type: 'string', required: true },
         orgName: { type: 'string', required: true },
         parentId: { type: 'string', required: true },
-        dutyPerson: { type: 'string', required: true }
+        dutyPerson: { type: 'string', required: true },
+        status: { type: 'string', defaultsTo: '0' }
     }
 };
