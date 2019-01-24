@@ -12,6 +12,7 @@
  * dutyPerson: 责任人
  * status: 状态
  */
+let moment = require("moment");
 module.exports = {
     tableName: "org",
     attributes: {
@@ -20,5 +21,9 @@ module.exports = {
         parentId: { type: 'string', required: true },
         dutyPerson: { type: 'string', required: true },
         status: { type: 'string', defaultsTo: '0' }
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        proceed();
     }
 };

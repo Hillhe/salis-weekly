@@ -18,6 +18,7 @@
  * status: 状态
  * remark:备注
  */
+let moment = require("moment");
 module.exports = {
     tableName: "project",
     attributes: {
@@ -32,5 +33,9 @@ module.exports = {
         wordpath: { type: 'string', defaultsTo: '' },
         status: { type: 'string', defaultsTo: '0' },
         remark: { type: 'string', defaultsTo: '' },
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        proceed();
     }
 };

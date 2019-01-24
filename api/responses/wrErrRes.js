@@ -3,7 +3,7 @@
  * This will be available in controllers as res.wrErrRes('foo');
  */
 
-module.exports = function wrErrRes(message, data) {
+module.exports = function wrErrRes(message = "", data = []) {
     var req = this.req;
     var res = this.res;
     var result = {};

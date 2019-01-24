@@ -10,11 +10,16 @@
  * status: 状态
  * order: 顺序
  */
+let moment = require("moment");
 module.exports = {
     tableName: "area",
     attributes: {
         areaname: { type: 'string', required: true },
-        order: { type: 'number', defaultsTo: 0 },
+        order: { type: 'number', autoIncrement: true },
         status: { type: 'string', defaultsTo: '0' }
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        proceed();
     }
 };

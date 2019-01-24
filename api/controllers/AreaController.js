@@ -16,7 +16,6 @@ module.exports = {
             let { name } = req.body;
             Area.findOrCreate({ areaname: name }, { areaname: name }).exec(async (err, area, wasCreated) => {
                 if (err) { res.wrErrRes(err); }
-                await Area.updateOne({ id: area.id }).set({ order: area.id });
                 let areas = await Area.find({ status: { '!=': COMMON.deleted } }).sort('order ASC');
                 if (!wasCreated && area) {
                     res.wrRes(AREA_ERR.has, areas);

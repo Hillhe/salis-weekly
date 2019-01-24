@@ -53,7 +53,6 @@ module.exports = {
                     sheet.mergeCell("A" + (sheet.startRow + 1), "A" + sheet.curRow);
                     sheet.setOneCellStyle("A" + (sheet.startRow + 1), EXCELCONF.proSetOpt);
                 };
-
             });
             /****************************set Data and Style**********************************/
             //生成表格

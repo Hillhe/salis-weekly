@@ -24,10 +24,12 @@
  * startDate: 开始日期
  * endDate: 交付日期
  * progress: 进度
+ * month: 月份
  * taskStatus: 状态
  * status: 状态
  * remark: 备注
  */
+let moment = require("moment");
 module.exports = {
     tableName: "task",
     attributes: {
@@ -49,8 +51,14 @@ module.exports = {
         startDate: { type: 'string', defaultsTo: '' },
         endDate: { type: 'string', defaultsTo: '' },
         progress: { type: 'string', defaultsTo: '' },
+        month: { type: 'string' },
         taskStatus: { type: 'string', defaultsTo: '' },
         status: { type: 'string', defaultsTo: '0' },
         remark: { type: 'string', defaultsTo: '' }
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        valuesToSet.month = moment().get('month') + 1 + '';
+        proceed();
     }
 };

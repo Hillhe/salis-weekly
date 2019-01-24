@@ -18,7 +18,7 @@ module.exports = function wrPageRes(message, total = 0, pageIndex = COMMON.pageI
     result.data = resultData;
 
     if (req.wantsJSON) {
-        sails.log.info(result);
+        sails.log.info(JSON.stringify(result));
         return res.json(result);
     }
 }

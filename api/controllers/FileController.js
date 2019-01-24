@@ -11,5 +11,15 @@ module.exports = {
         } catch (error) {
             res.wrErrRes(error);
         }
-    }
+    },
+    async export_test(req, res) {
+        try {
+            let data = await TaskController.getExcelData();
+            await ExcelService.makeWeekExcel(data, result => {
+                res.wrRes(FILE_ERR.exportok, result);
+            });
+        } catch (error) {
+            res.wrErrRes(error);
+        }
+    },
 }

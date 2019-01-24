@@ -50,7 +50,8 @@ module.exports = {
         nullRowOpt: {
             data: { index: "暂无" },
             option: {
-                alignment: { vertical: 'middle', horizontal: 'center' }
+                alignment: { vertical: 'middle', horizontal: 'center' },
+                fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FFF2F2F2" } }
             }
         },
         proSetOpt: {

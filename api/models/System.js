@@ -10,11 +10,16 @@
  * value: 值
  * name: 名称
  */
+let moment = require("moment");
 module.exports = {
     tableName: "sysconfig",
     attributes: {
         key: { type: 'string', required: true },
         value: { type: 'string', required: true },
         name: { type: 'string', defaultsTo: '' }
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        proceed();
     }
 };

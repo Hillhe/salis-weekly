@@ -20,6 +20,7 @@
  * lastLogin: 最后登录时间
  * status: 用户状态，0/1
  */
+let moment = require("moment");
 module.exports = {
     tableName: "user",
     attributes: {
@@ -36,5 +37,9 @@ module.exports = {
         lastLogin: { type: 'string', defaultsTo: '' },
         visitTimes: { type: 'string', defaultsTo: '0' },
         status: { type: 'string', defaultsTo: '0' }
+    },
+    beforeCreate: function (valuesToSet, proceed) {
+        valuesToSet.id = moment().format('x');
+        proceed();
     }
 };
