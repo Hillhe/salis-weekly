@@ -1,5 +1,5 @@
 let FILE_ERR = sails.config.custom.FILE;
-import TaskController from './TaskController';
+let TaskController = require('./TaskController');
 module.exports = {
     //导出周报
     async exportWeeklyExcel(req, res) {

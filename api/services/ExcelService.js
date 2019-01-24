@@ -1,6 +1,6 @@
 let Excel = require('exceljs');
 let moment = require("moment");
-let EXCELCONF = sails.config.custom.EXCEL;
+let EXCELCONF = sails.config.custom.weekExcel;
 let WorkSheet = require("./WorkSheet");
 
 module.exports = {
@@ -29,7 +29,7 @@ module.exports = {
                     let tasks = p.tasks;
                     if (tasks.length == 0) {
                         //添加空行
-                        sheet.addOneRow(EXCELCONF.nullRow.data, EXCELCONF.nullRow.option);
+                        sheet.addOneRow(EXCELCONF.nullRowOpt.data, EXCELCONF.nullRowOpt.option);
                         sheet.mergeCell(`B${sheet.curRow}`, `${String.fromCharCode(65 + EXCELCONF.sheetOpt.columns.length - 1)}${sheet.curRow}`);
                     } else {
                         tasks.map((t, i) => {
@@ -51,7 +51,7 @@ module.exports = {
                 //设置项目集样式
                 if ((sheet.startRow + 1) < sheet.curRow) {
                     sheet.mergeCell("A" + (sheet.startRow + 1), "A" + sheet.curRow);
-                    sheet.setOneCellStyle("A" + (sheet.startRow + 1), EXCELCONF.proSet);
+                    sheet.setOneCellStyle("A" + (sheet.startRow + 1), EXCELCONF.proSetOpt);
                 };
 
             });

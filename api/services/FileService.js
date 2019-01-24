@@ -1,11 +1,8 @@
-let moment = require("moment");
 module.exports = {
     //上传文件-测试
     async upload(req, res) {
         try {
             req.file('file').upload({
-                maxBytes: FILECONF.maxBytes,
-                dirname: FILECONF.imgOutPath,
                 saveAs: function (__newFileStream, next) {
                     return next(undefined, __newFileStream.filename);
                 }

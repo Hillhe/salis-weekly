@@ -28,7 +28,7 @@ module.exports.policies = {
     },
     AreaController: {
         addOneArea: 'is-super-admin',
-        updataOneArea: 'is-super-admin',
+        updateOneArea: 'is-super-admin',
         delOneArea: 'is-super-admin',
     },
     ProjectController: {

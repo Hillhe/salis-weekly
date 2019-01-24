@@ -22,9 +22,13 @@ module.exports = {
     //查询任务
     async getTaskList(req, res) {
         try {
-            let { startDate = "", endDate = "", period = 0, taskType = 0, prods = '', pid = "",
+            let { startDate = "", endDate = "", period = "", taskType = 0, prods = '', pid = "",
                 taskDutyPerson = 0, progress = 0, pageIndex = COMMON.pageIndex, pageSize = COMMON.pageSize } = req.query;
             let SQL = `SELECT FIELDS FROM task AS t LEFT JOIN user AS u ON u.id = t.taskDutyPerson WHERE t.status != 1 AND pid = ${pid}`;
+            if (period != "") {
+                startDate = moment().startOf('isoWeek').add(parseInt(period)*7, 'days').format('x');
+                endDate = moment().endOf('isoWeek').add(parseInt(period)*7, 'days').format('x');
+            }
             if (startDate) {
                 SQL += ` AND t.startDate >= ${startDate}`;
             }
@@ -53,19 +57,19 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
-    //导入上周数据
+    //导入上周计划(开始和结束时间在本周内)
     async importLastWeekTask(req, res) {
         try {
-            let { pid = "" } = req.query
-            let startDate = moment().startOf('isoWeek').add(-7, 'days').format('x'); // 上周一 00时00分00秒
-            let endDate = moment().endOf('isoWeek').add(-7, 'days').format('x'); // 上周日 23时59分59秒
+            let { pid = "" } = req.query;
+            let startDate = moment().startOf('isoWeek').format('x'); // 周一 00时00分00秒
+            let endDate = moment().endOf('isoWeek').format('x'); // 周日 23时59分59秒
             let tasks = await sails.sendNativeQuery(SQLS.TASK_LAST_WEEK, [pid, startDate, endDate]);
             res.wrRes(TASK.ok, tasks.rows);
         } catch (error) {
             res.wrErrRes(error);
         }
     },
-    //获取编辑模式下的数据
+    //获取编辑模式下的数据(开始时间和结束时间在本周一至下周日内)
     async getTaskWhenEidt(req, res) {
         try {
             let { pid = "" } = req.query;
@@ -77,7 +81,7 @@ module.exports = {
             res.wrErrRes(error);
         }
     },
-    //获取周报数据
+    //获取周报数据(开始时间和结束时间在本周一至下周日内)
     async getExcelData() {
         try {
             let startDate = moment().startOf('isoWeek').format('x'); // 本周一 00时00分00秒
